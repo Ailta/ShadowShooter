@@ -4,7 +4,7 @@ let player = {
    speed: 10,
 
    direction: 0, // radians
-   fov: 0.3,
+   fov: 0.5,
 }
 
 game.addEventListener("mousemove", event => {

@@ -64,8 +64,18 @@ function polygon(points) {
             for (point of this.points) {
                ctx.lineTo(offX + point[0], offY + point[1]);
             }
-            ctx.fillStyle = "crimson";
+            ctx.fillStyle = shadowColor;
             ctx.fill();
+
+            // lines to fix annoyng gap in diagonals
+            ctx.beginPath();
+            for (point of this.points) {
+               ctx.lineTo(offX + point[0], offY + point[1]);
+            }
+            ctx.lineTo(offX + this.points[0][0], offY + this.points[0][1]);
+            ctx.strokeStyle = shadowColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
 
             // shadow
             // this is a bit hacky but it works
@@ -89,16 +99,34 @@ function polygon(points) {
             ctx.lineTo(offX + sm10 + Math.cos(sm12) * shadowLength,
                        offY + sm11 + Math.sin(sm12) * shadowLength);
             ctx.lineTo(offX + sm10, offY + sm11);
-            ctx.fillStyle = "green";
+            ctx.lineTo(offX + s00, offY + s01);
+            ctx.fillStyle = shadowColor;
             ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(offX + s00, offY + s01);
+            ctx.lineTo(offX + s00 + Math.cos(s02) * shadowLength,
+                       offY + s01 + Math.sin(s02) * shadowLength);
+            ctx.lineTo(offX + sm10 + Math.cos(sm12) * shadowLength,
+                       offY + sm11 + Math.sin(sm12) * shadowLength);
+            ctx.lineTo(offX + sm10, offY + sm11);
+            ctx.lineTo(offX + s00, offY + s01);
+            ctx.strokeStyle = shadowColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
 
             const s10 = sorted[1][0];
             const s11 = sorted[1][1];
             const s12 = sorted[1][2];
 
-            const sm20 = sorted[sorted.length - 2][0];
-            const sm21 = sorted[sorted.length - 2][1];
-            const sm22 = sorted[sorted.length - 2][2];
+            let sm20 = sorted[sorted.length - 2][0];
+            let sm21 = sorted[sorted.length - 2][1];
+            let sm22 = sorted[sorted.length - 2][2];
+            if (sorted.length == 3) {
+               sm20 = s00;
+               sm21 = s01;
+               sm22 = s02;
+            }
 
             ctx.beginPath();
             ctx.moveTo(offX + s10, offY + s11);
@@ -107,8 +135,21 @@ function polygon(points) {
             ctx.lineTo(offX + sm20 + Math.cos(sm22) * shadowLength,
                        offY + sm21 + Math.sin(sm22) * shadowLength);
             ctx.lineTo(offX + sm20, offY + sm21);
-            ctx.fillStyle = "green";
+            ctx.lineTo(offX + s10, offY + s11);
+            ctx.fillStyle = shadowColor;
             ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(offX + s10, offY + s11);
+            ctx.lineTo(offX + s10 + Math.cos(s12) * shadowLength,
+                       offY + s11 + Math.sin(s12) * shadowLength);
+            ctx.lineTo(offX + sm20 + Math.cos(sm22) * shadowLength,
+                       offY + sm21 + Math.sin(sm22) * shadowLength);
+            ctx.lineTo(offX + sm20, offY + sm21);
+            ctx.lineTo(offX + s10, offY + s11);
+            ctx.strokeStyle = shadowColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
          }
       }
    }
@@ -117,4 +158,5 @@ function polygon(points) {
 let map = [
    polygon([[-300, 100], [200, 100], [200, 200], [-300, 200]]),
    polygon([[-300, -200], [200, -200], [200, -100], [-300, -100]]),
+   polygon([[400, 200], [600, 180], [600, 300]]),
 ]

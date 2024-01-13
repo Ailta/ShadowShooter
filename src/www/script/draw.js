@@ -1,8 +1,13 @@
 const game = document.getElementById("game");
 const gameContext = game.getContext("2d");
 
+const shadowColor = "black";
+const flashlightColor = "lightgray";
+
 function clear() {
 	gameContext.clearRect(0, 0, game.width, game.height);
+   gameContext.fillStyle = flashlightColor;
+   gameContext.fillRect(0, 0, game.width, game.height);
 }
 
 function draw() {
@@ -16,11 +21,12 @@ function draw() {
 
    // half diagonal
    const darknessRadius = Math.sqrt(Math.pow(game.width, 2) + Math.pow(game.height, 2)) / 2;
+   const shadowLength = darknessRadius * 6;
 
    // player
    gameContext.beginPath();
    gameContext.arc(plX, plY, 30, 0, 2 * Math.PI);
-   gameContext.fillStyle = "gray";
+   gameContext.fillStyle = shadowColor;
    gameContext.fill(); 
 
    // vision
@@ -30,14 +36,14 @@ function draw() {
                    player.direction + player.fov,
                    player.direction - player.fov);
    gameContext.lineTo(plX, plY);
-   gameContext.fillStyle = "black";
+   gameContext.fillStyle = shadowColor;
    gameContext.fill();
 
    // 
 
    // map
    for (object of map) {
-      object.draw(gameContext, offX, offY, darknessRadius);
+      object.draw(gameContext, offX, offY, shadowLength);
    }
 }
 
