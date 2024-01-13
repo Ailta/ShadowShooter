@@ -1,12 +1,12 @@
 function polygon(points) {
    // we will use this later*
    for (point of points) {
-      point.push(null);
+      point.push(0);
    }
 
    return {
       points: points,
-      draw: function(ctx, offX, offY, r) {
+      draw: function(ctx, offX, offY, shadowLength) {
          let inWiew = false;
 
          // js uses range of -PI to PI instead of 0 to 2PI
@@ -67,31 +67,47 @@ function polygon(points) {
             ctx.fillStyle = "crimson";
             ctx.fill();
 
-            // get shadow
+            // shadow
+            // this is a bit hacky but it works
+            // might fix later
             sorted = this.points.slice().sort((a, b) => {
                return a[2] - b[2];
             });
 
-            // draw the shadow
+            const s00 = sorted[0][0];
+            const s01 = sorted[0][1];
+            const s02 = sorted[0][2];
+
+            const sm10 = sorted[sorted.length - 1][0];
+            const sm11 = sorted[sorted.length - 1][1];
+            const sm12 = sorted[sorted.length - 1][2];
 
             ctx.beginPath();
-            ctx.moveTo(offX + sorted[0][0], offY + sorted[0][1]);
-            ctx.lineTo(offX +  Math.cos(sorted[0][2]) * r, offY + Math.sin(sorted[0][2]) * r);
-            ctx.lineTo(offX +  Math.cos(sorted[sorted.length - 1][2]) * r, offY + Math.sin(sorted[sorted.length - 1][2]) * r);
-            ctx.lineTo(offX + sorted[sorted.length - 1][0], offY + sorted[sorted.length - 1][1]);
+            ctx.moveTo(offX + s00, offY + s01);
+            ctx.lineTo(offX + s00 + Math.cos(s02) * shadowLength,
+                       offY + s01 + Math.sin(s02) * shadowLength);
+            ctx.lineTo(offX + sm10 + Math.cos(sm12) * shadowLength,
+                       offY + sm11 + Math.sin(sm12) * shadowLength);
+            ctx.lineTo(offX + sm10, offY + sm11);
             ctx.fillStyle = "green";
-            ctx.fill()
-
-
-            console.log(sorted);
-            ctx.beginPath();
-            ctx.arc(offX + sorted[0][0], offY + sorted[0][1], 5, 0, 2 * Math.PI);
-            ctx.fillStyle = "orange";
             ctx.fill();
 
+            const s10 = sorted[1][0];
+            const s11 = sorted[1][1];
+            const s12 = sorted[1][2];
+
+            const sm20 = sorted[sorted.length - 2][0];
+            const sm21 = sorted[sorted.length - 2][1];
+            const sm22 = sorted[sorted.length - 2][2];
+
             ctx.beginPath();
-            ctx.arc(offX + sorted[sorted.length - 1][0], offY + sorted[sorted.length - 1][1], 5, 0, 2 * Math.PI);
-            ctx.fillStyle = "orange";
+            ctx.moveTo(offX + s10, offY + s11);
+            ctx.lineTo(offX + s10 + Math.cos(s12) * shadowLength,
+                       offY + s11 + Math.sin(s12) * shadowLength);
+            ctx.lineTo(offX + sm20 + Math.cos(sm22) * shadowLength,
+                       offY + sm21 + Math.sin(sm22) * shadowLength);
+            ctx.lineTo(offX + sm20, offY + sm21);
+            ctx.fillStyle = "green";
             ctx.fill();
          }
       }
