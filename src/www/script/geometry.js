@@ -9,7 +9,7 @@ function polygon(points) {
          let start = player.direction - player.fov;
          if (start < 0) start += 2 * Math.PI;
          let end = player.direction + player.fov;
-         if (end > 2 * Math.PI) end -= 2 * Math.PI;
+         if (end < 0) end += 2 * Math.PI;
          let dir = player.direction;
          if (dir < 0) dir += 2 * Math.PI;
 
@@ -27,7 +27,7 @@ function polygon(points) {
             const m = Math.tan(dir);
             const b = player.y - m * player.x;
             let m2 = (p2[1] - p1[1]) / (p2[0] - p1[0]);
-            if (m2 == Infinity || m2 == -Infinity) m2 = 1;
+            if (m2 == Infinity || m2 == -Infinity) m2 = 1000000000000;
             const b2 = p1[1] - m2 * p1[0];
             const x = (b2 - b) / (m - m2);
             const y = m * x + b;
@@ -35,8 +35,15 @@ function polygon(points) {
             if (((p1[0] > p2[0] ? x > p2[0] && x < p1[0] : x < p2[0] && x > p1[0])
              || (p1[1] > p2[1] ? y > p2[1] && y < p1[1] : y < p2[1] && y > p1[1]))
              // to catch only the correct side
-             && Math.atan2(y - player.y, x - player.x).toFixed(3) == player.direction.toFixed(3)) {
+             && Math.atan2(y - player.y, x - player.x).toFixed(9) == player.direction.toFixed(9)) {
                inWiew = true;
+
+               console.log(Math.atan2(y - player.y, x - player.x).toFixed(15), player.direction.toFixed(15));
+               gameContext.beginPath();
+               gameContext.arc(offX + x, offY + y, 10, 0, 2 * Math.PI);
+               gameContext.fillStyle = "orange";
+               gameContext.fill();
+
                break;
             }
          }
@@ -49,6 +56,7 @@ function polygon(points) {
 
                if (end > start ? ang >= start && ang <= end : ang >= start || ang <= end) {
                   inWiew = true;
+                  console.log(start, ang, end);
                   break;
                }
             }
