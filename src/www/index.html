@@ -3,9 +3,15 @@
 <head>
 	<title>JS na straně klienta</title>
 	<meta charset="UTF-8" />
+   <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-	<p>Hello World!</p>
+<body onload="init()">
+
+   <canvas id="game"></canvas>
+
+   <script src="/script/player.js"></script>
+   <script src="/script/geometry.js"></script>
+   <script src="/script/draw.js"></script>
 	<script src="/script/index.js"></script>
 </body>
 </html>
