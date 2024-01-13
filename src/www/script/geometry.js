@@ -1,7 +1,7 @@
 function polygon(points) {
    return {
       points: points,
-      draw: function(ctx, offX, offY) {
+      draw: function(ctx, offX, offY, r) {
          let inWiew = false;
 
          // js uses range of -PI to PI instead of 0 to 2PI
@@ -32,35 +32,21 @@ function polygon(points) {
             const x = (b2 - b) / (m - m2);
             const y = m * x + b;
 
-            if (((p1[0] > p2[0] ? x > p2[0] && x < p1[0] : x < p2[0] && x > p1[0])
+            // looking through
+            if ((((p1[0] > p2[0] ? x > p2[0] && x < p1[0] : x < p2[0] && x > p1[0])
              || (p1[1] > p2[1] ? y > p2[1] && y < p1[1] : y < p2[1] && y > p1[1]))
              // to catch only the correct side
-             && Math.atan2(y - player.y, x - player.x).toFixed(9) == player.direction.toFixed(9)) {
+             && Math.atan2(y - player.y, x - player.x).toFixed(9) == player.direction.toFixed(9))
+
+            // point in field of view
+            || (end > start ? ang1 >= start && ang1 <= end : ang1 >= start || ang1 <= end)
+            || (end > start ? ang2 >= start && ang2 <= end : ang2 >= start || ang2 <= end)) {
+
                inWiew = true;
-
-               console.log(Math.atan2(y - player.y, x - player.x).toFixed(15), player.direction.toFixed(15));
-               gameContext.beginPath();
-               gameContext.arc(offX + x, offY + y, 10, 0, 2 * Math.PI);
-               gameContext.fillStyle = "orange";
-               gameContext.fill();
-
                break;
             }
          }
 
-         if (!inWiew) {
-            // check if any point in players field of view
-            for (point of this.points) {
-               let ang = Math.atan2(point[1] - player.y, point[0] - player.x);
-               if (ang < 0) ang += 2 * Math.PI;
-
-               if (end > start ? ang >= start && ang <= end : ang >= start || ang <= end) {
-                  inWiew = true;
-                  console.log(start, ang, end);
-                  break;
-               }
-            }
-         }
 
          if (inWiew) {
             ctx.beginPath();
