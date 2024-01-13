@@ -37,7 +37,7 @@ function draw() {
 
    // map
    for (object of map) {
-      object.draw(gameContext, offX, offY);
+      object.draw(gameContext, offX, offY, darknessRadius);
    }
 }
 
