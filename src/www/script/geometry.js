@@ -171,17 +171,34 @@ function sphere(center, radius) {
          let dir = player.direction;
          if (dir < 0) dir += 2 * Math.PI;
 
-         let angCenter = MathCenter = Math.atan2(this.center[1] - player.y, this.center[0] - player.x);
+         let angCenter = Math.atan2(this.center[1] - player.y, this.center[0] - player.x);
          if (angCenter < 0) angCenter += 2 * Math.PI;
          let distanceCenter = Math.sqrt(Math.pow(player.x - this.center[0], 2) + Math.pow(player.y - this.center[1], 2));
 
-         let angPoint = Math.atan(this.radius / distanceCenter);
-         let distancePoint = Math.sqrt(Math.pow(distanceCenter, 2) + Math.pow(this.radius, 2));
+         // https://cs.wikibooks.org/wiki/Geometrie/Numerick%C3%BD_v%C3%BDpo%C4%8Det_pr%C5%AFniku_dvou_kru%C5%BEnic
+         let thalR = distanceCenter/2;
+         let thalX = player.x + Math.cos(angCenter) * thalR;
+         let thalY = player.y + Math.sin(angCenter) * thalR;
+         let d = Math.sqrt(Math.pow(this.center[0] - thalX, 2) + Math.pow(this.center[1] - thalY, 2));
+         let m = (Math.pow(this.radius, 2) - Math.pow(thalR, 2))/(2*d) + d/2;
+         let v = Math.sqrt(Math.pow(this.radius, 2) - Math.pow(m, 2));
+         let sX = this.center[0] + (m/d) * (thalX - this.center[0]);
+         let sY = this.center[1] + (m/d) * (thalY - this.center[1]);
 
-         let angPoint1 = (angCenter + angPoint)%(2*Math.PI);
-         let angPoint2 = angCenter >= angPoint ? angCenter - angPoint : 2*Math.PI - angPoint + angCenter;
+         let point1 = [
+            sX + (v/d)*(this.center[1] - thalY),
+            sY - (v/d)*(this.center[0] - thalX),
+         ];
+         let point2 = [
+            sX - (v/d)*(this.center[1] - thalY),
+            sY + (v/d)*(this.center[0] - thalX),
+         ];
+
+         let angPoint1 = Math.atan2(point1[1] - player.y, point1[0] - player.x); //(angCenter + angPoint)%(2*Math.PI);
+         let angPoint2 = Math.atan2(point2[1] - player.y, point2[0] - player.x); //angCenter >= angPoint ? angCenter - angPoint : 2*Math.PI - angPoint + angCenter;
 
          console.log(start, angCenter, end)
+         console.log(thalR, thalX, thalY, d, m, v, sX, sY)
          console.log(angPoint1, angPoint2)
 
          block: {
@@ -209,14 +226,14 @@ function sphere(center, radius) {
 
             // shadow
             ctx.beginPath();
-            ctx.moveTo(offX + player.x + Math.cos(angPoint1) * distancePoint,
-                       offY + player.y + Math.sin(angPoint1) * distancePoint);
-            ctx.lineTo(offX + player.x + Math.cos(angPoint1) * shadowLength,
-                       offY + player.y + Math.sin(angPoint1) * shadowLength);
-            ctx.lineTo(offX + player.x + Math.cos(angPoint2) * shadowLength,
-                       offY + player.y + Math.sin(angPoint2) * shadowLength);
-            ctx.lineTo(offX + player.x + Math.cos(angPoint2) * distancePoint,
-                       offY + player.y + Math.sin(angPoint2) * distancePoint);
+            ctx.moveTo(offX + point1[0],
+                       offY + point1[1]);
+            ctx.lineTo(offX + point1[0] + Math.cos(angPoint1) * shadowLength,
+                       offY + point1[1] + Math.sin(angPoint1) * shadowLength);
+            ctx.lineTo(offX + point2[0] + Math.cos(angPoint2) * shadowLength,
+                       offY + point2[1] + Math.sin(angPoint2) * shadowLength);
+            ctx.lineTo(offX + point2[0],
+                       offY + point2[1]);
             ctx.fillStyle = shadowColor;
             ctx.fill();
 
@@ -226,14 +243,26 @@ function sphere(center, radius) {
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(offX + player.x + Math.cos(angPoint1) * distancePoint,
-                    offY + player.y + Math.sin(angPoint1) * distancePoint,
+            ctx.arc(offX + thalX,
+                    offY + thalY,
                     5, 0, 2 * Math.PI);
             ctx.fillStyle = "crimson";
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(offX + player.x + Math.cos(angPoint2) * distancePoint,
-                    offY + player.y + Math.sin(angPoint2) * distancePoint,
+            ctx.arc(offX + point1[0],
+                    offY + point1[1],
+                    5, 0, 2 * Math.PI);
+            ctx.fillStyle = "crimson";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(offX + point2[0],
+                    offY + point2[1],
+                    5, 0, 2 * Math.PI);
+            ctx.fillStyle = "crimson";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(offX + this.center[0],
+                    offY + this.center[1],
                     5, 0, 2 * Math.PI);
             ctx.fillStyle = "crimson";
             ctx.fill();
