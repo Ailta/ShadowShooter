@@ -38,11 +38,14 @@ function polygon(points) {
                continue;
             }
 
+            // point player is looking at
+            // basically intersection of two lines
             // my english is not good enough to understand this
-            const m = Math.tan(dir);
+            const m = Math.tan(dir); // nvim highlits 'tan' as a color lol
             const b = player.y - m * player.x;
             let m2 = (p2[1] - p1[1]) / (p2[0] - p1[0]);
             // don't ask
+            // if it works, it works
             if (m2 == Infinity || m2 == -Infinity) m2 = 1000000000000;
             const b2 = p1[1] - m2 * p1[0];
             const x = (b2 - b) / (m - m2);
@@ -56,7 +59,6 @@ function polygon(points) {
                inWiew = true;
             }
          }
-
 
          if (inWiew) {
             // draw the polygon
@@ -155,8 +157,64 @@ function polygon(points) {
    }
 }
 
+function sphere(center, radius) {
+   return {
+      center: center,
+      radius: radius,
+      draw: function(ctx, offX, offY, shadowLength) {
+         let inWiew = false;
+
+         let start = player.direction - player.fov;
+         if (start < 0) start += 2 * Math.PI;
+         let end = player.direction + player.fov;
+         if (end < 0) end += 2 * Math.PI;
+         let dir = player.direction;
+         if (dir < 0) dir += 2 * Math.PI;
+
+         let angCenter = MathCenter = Math.atan2(this.center[1] - player.y, this.center[0] - player.x);
+         if (angCenter < 0) angCenter += 2 * Math.PI;
+         let distanceCenter = Math.sqrt(Math.pow(player.x - this.center[0], 2) + Math.pow(player.y - this.center[1], 2));
+
+         let angPoint = Math.atan(this.radius / distanceCenter);
+         let distancePoint = Math.sqrt(Math.pow(distanceCenter, 2) + Math.pow(this.radius, 2));
+
+         let angPoint1 = (angCenter + angPoint)%(2*Math.PI);
+         let angPoint2 = angCenter > angPoint ? angCenter - angPoint : Math.PI - (angPoint + angCenter);
+
+         console.log(start, angCenter, end)
+
+         block: {
+            // if side of circle seen
+            if ((end > start ? angPoint1 >= start && angPoint1 <= end : angPoint1 >= start || angPoint1 <= end)
+             || (end > start ? angPoint2 >= start && angPoint2 <= end : angPoint2 >= start || angPoint2 <= end)) {
+               inWiew = true;
+               break block;
+            }
+
+            // if is player looking between the two points
+            if (angPoint1 > angPoint2 ?
+                 (angPoint1 > dir && dir > angPoint2)
+                :(angPoint1 > dir || dir > angPoint2))
+                   inWiew = true;
+            
+         }
+
+         if (inWiew) {
+            ctx.beginPath();
+            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = "crimson";
+            ctx.fill();
+         }
+         console.log("-------------")
+      }
+   }
+}
+
+
 let map = [
    polygon([[-300, 100], [200, 100], [200, 200], [-300, 200]]),
    polygon([[-300, -200], [200, -200], [200, -100], [-300, -100]]),
    polygon([[400, 200], [600, 180], [600, 300]]),
+   sphere([-400, 0], 93),
+   sphere([600, 0], 200),
 ]
