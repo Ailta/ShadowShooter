@@ -179,9 +179,10 @@ function sphere(center, radius) {
          let distancePoint = Math.sqrt(Math.pow(distanceCenter, 2) + Math.pow(this.radius, 2));
 
          let angPoint1 = (angCenter + angPoint)%(2*Math.PI);
-         let angPoint2 = angCenter > angPoint ? angCenter - angPoint : Math.PI - (angPoint + angCenter);
+         let angPoint2 = angCenter >= angPoint ? angCenter - angPoint : 2*Math.PI - angPoint + angCenter;
 
          console.log(start, angCenter, end)
+         console.log(angPoint1, angPoint2)
 
          block: {
             // if side of circle seen
@@ -200,8 +201,40 @@ function sphere(center, radius) {
          }
 
          if (inWiew) {
+            // circle
             ctx.beginPath();
             ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = shadowColor;
+            ctx.fill();
+
+            // shadow
+            ctx.beginPath();
+            ctx.moveTo(offX + player.x + Math.cos(angPoint1) * distancePoint,
+                       offY + player.y + Math.sin(angPoint1) * distancePoint);
+            ctx.lineTo(offX + player.x + Math.cos(angPoint1) * shadowLength,
+                       offY + player.y + Math.sin(angPoint1) * shadowLength);
+            ctx.lineTo(offX + player.x + Math.cos(angPoint2) * shadowLength,
+                       offY + player.y + Math.sin(angPoint2) * shadowLength);
+            ctx.lineTo(offX + player.x + Math.cos(angPoint2) * distancePoint,
+                       offY + player.y + Math.sin(angPoint2) * distancePoint);
+            ctx.fillStyle = shadowColor;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = "green";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(offX + player.x + Math.cos(angPoint1) * distancePoint,
+                    offY + player.y + Math.sin(angPoint1) * distancePoint,
+                    5, 0, 2 * Math.PI);
+            ctx.fillStyle = "crimson";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(offX + player.x + Math.cos(angPoint2) * distancePoint,
+                    offY + player.y + Math.sin(angPoint2) * distancePoint,
+                    5, 0, 2 * Math.PI);
             ctx.fillStyle = "crimson";
             ctx.fill();
          }
@@ -216,5 +249,5 @@ let map = [
    polygon([[-300, -200], [200, -200], [200, -100], [-300, -100]]),
    polygon([[400, 200], [600, 180], [600, 300]]),
    sphere([-400, 0], 93),
-   sphere([600, 0], 200),
+   // sphere([600, 0], 200),
 ]
