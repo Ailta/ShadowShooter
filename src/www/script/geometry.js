@@ -1,3 +1,5 @@
+let PI2 = Math.PI * 2;
+
 function polygon(points) {
    // we will use this later*
    for (point of points) {
@@ -12,11 +14,11 @@ function polygon(points) {
          // js uses range of -PI to PI instead of 0 to 2PI
          // so I do this conversion
          let start = player.direction - player.fov;
-         if (start < 0) start += 2 * Math.PI;
+         if (start < 0) start += PI2;
          let end = player.direction + player.fov;
-         if (end < 0) end += 2 * Math.PI;
+         if (end < 0) end += PI2;
          let dir = player.direction;
-         if (dir < 0) dir += 2 * Math.PI;
+         if (dir < 0) dir += PI2;
 
          // check if players direction goes into any of its sides
          for (let i=0; i< this.points.length; i++) {
@@ -24,9 +26,9 @@ function polygon(points) {
             let p2 = this.points[(i + 1) % this.points.length];
 
             let ang1 = Math.atan2(p1[1] - player.y, p1[0] - player.x);
-            if (ang1 < 0) ang1 += 2 * Math.PI;
+            if (ang1 < 0) ang1 += PI2;
             let ang2 = Math.atan2(p2[1] - player.y, p2[0] - player.x);
-            if (ang2 < 0) ang2 += 2 * Math.PI;
+            if (ang2 < 0) ang2 += PI2;
 
             // *about here
             this.points[i][2] = ang1;
@@ -165,14 +167,14 @@ function sphere(center, radius) {
          let inWiew = false;
 
          let start = player.direction - player.fov;
-         if (start < 0) start += 2 * Math.PI;
+         if (start < 0) start += PI2;
          let end = player.direction + player.fov;
-         if (end < 0) end += 2 * Math.PI;
+         if (end < 0) end += PI2;
          let dir = player.direction;
-         if (dir < 0) dir += 2 * Math.PI;
+         if (dir < 0) dir += PI2;
 
          let angCenter = Math.atan2(this.center[1] - player.y, this.center[0] - player.x);
-         if (angCenter < 0) angCenter += 2 * Math.PI;
+         if (angCenter < 0) angCenter += PI2;
          let distanceCenter = Math.sqrt(Math.pow(player.x - this.center[0], 2) + Math.pow(player.y - this.center[1], 2));
 
          // https://cs.wikibooks.org/wiki/Geometrie/Numerick%C3%BD_v%C3%BDpo%C4%8Det_pr%C5%AFniku_dvou_kru%C5%BEnic
@@ -194,12 +196,10 @@ function sphere(center, radius) {
             sY + (v/d)*(this.center[0] - thalX),
          ];
 
-         let angPoint1 = Math.atan2(point1[1] - player.y, point1[0] - player.x); //(angCenter + angPoint)%(2*Math.PI);
-         let angPoint2 = Math.atan2(point2[1] - player.y, point2[0] - player.x); //angCenter >= angPoint ? angCenter - angPoint : 2*Math.PI - angPoint + angCenter;
-
-         console.log(start, angCenter, end)
-         console.log(thalR, thalX, thalY, d, m, v, sX, sY)
-         console.log(angPoint1, angPoint2)
+         let angPoint1 = Math.atan2(point1[1] - player.y, point1[0] - player.x)%PI2;
+         if (angPoint1 < 0) angPoint1 += PI2;
+         let angPoint2 = Math.atan2(point2[1] - player.y, point2[0] - player.x)%PI2;
+         if (angPoint2 < 0) angPoint2 += PI2;
 
          block: {
             // if side of circle seen
@@ -210,9 +210,9 @@ function sphere(center, radius) {
             }
 
             // if is player looking between the two points
-            if (angPoint1 > angPoint2 ?
-                 (angPoint1 > dir && dir > angPoint2)
-                :(angPoint1 > dir || dir > angPoint2))
+            if (angPoint2 > angPoint1 ?
+                 (angPoint2 >= dir && dir >= angPoint1)
+                :(angPoint2 >= dir || dir >= angPoint1))
                    inWiew = true;
             
          }
@@ -220,7 +220,7 @@ function sphere(center, radius) {
          if (inWiew) {
             // circle
             ctx.beginPath();
-            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, 2 * Math.PI);
+            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, PI2);
             ctx.fillStyle = shadowColor;
             ctx.fill();
 
@@ -236,38 +236,7 @@ function sphere(center, radius) {
                        offY + point2[1]);
             ctx.fillStyle = shadowColor;
             ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, 2 * Math.PI);
-            ctx.fillStyle = "green";
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(offX + thalX,
-                    offY + thalY,
-                    5, 0, 2 * Math.PI);
-            ctx.fillStyle = "crimson";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(offX + point1[0],
-                    offY + point1[1],
-                    5, 0, 2 * Math.PI);
-            ctx.fillStyle = "crimson";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(offX + point2[0],
-                    offY + point2[1],
-                    5, 0, 2 * Math.PI);
-            ctx.fillStyle = "crimson";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(offX + this.center[0],
-                    offY + this.center[1],
-                    5, 0, 2 * Math.PI);
-            ctx.fillStyle = "crimson";
-            ctx.fill();
          }
-         console.log("-------------")
       }
    }
 }
@@ -278,5 +247,5 @@ let map = [
    polygon([[-300, -200], [200, -200], [200, -100], [-300, -100]]),
    polygon([[400, 200], [600, 180], [600, 300]]),
    sphere([-400, 0], 93),
-   // sphere([600, 0], 200),
+   sphere([600, 0], 200),
 ]
