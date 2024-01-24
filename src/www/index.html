@@ -3,16 +3,17 @@
 <head>
 	<title>JS na straně klienta</title>
 	<meta charset="UTF-8" />
-   <link rel="stylesheet" href="/style.css">
+	<link rel="stylesheet" href="/style.css">
 </head>
 <body onload="init()">
 
-   <canvas id="game"></canvas>
-
-   <script src="/script/player.js"></script>
-   <script src="/script/geometry.js"></script>
-   <script src="/script/draw.js"></script>
-   <script src="/script/index.js"></script>
-   <script src="/script/multiplayer.js"></script>
+	<canvas id="game"></canvas>
+   
+    <script src="/socket.io/socket.io.js"></script>
+	<script src="/script/networking.js"></script>
+	<script src="/script/player.js"></script>
+	<script src="/script/geometry.js"></script>
+	<script src="/script/draw.js"></script>
+	<script src="/script/index.js"></script>
 </body>
 </html>
