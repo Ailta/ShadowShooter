@@ -5,6 +5,7 @@ const io = require('socket.io')(server);
 
 io.on('connection', socket => {
 	console.log(`connected: ${socket.id}`);
+	socket.emit('dataOnConnection', 'hi, Im first data.'); // Add a proper function that will return data of a map etc.
 	
 	socket.on('disconnect', function () {
 		console.log(`disconnect: ${socket.id}`);
@@ -26,7 +27,7 @@ io.on('connection', socket => {
 let dataSendTick = 30;
 async function loop(socket) {
    while (true) {
-	  socket.emit('data', 'hi, Im data.');
+	  socket.emit('dataFromServer', 'hi, Im data.');
 	  
 	  await new Promise(resolve => setTimeout(resolve, 1000 / dataSendTick));
    }
