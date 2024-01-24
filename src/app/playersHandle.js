@@ -24,7 +24,7 @@ function onClientDisconnect (socket) {
 function returnPlayersPostions () {
 	// This function gets called every time the server wants to send data about players to the clients
 	// I'm not sure what will this function return in the future
-	// For now I think the data it returns should be the players position, name, socket.id
+	// For now I think the data it returns should be the players socket.id, position, direction, name
 	// Socket.id so that a client can filter out him self out of the data on his end
 	
 	// !!!This function is not yet implemented in networking.js!!!
