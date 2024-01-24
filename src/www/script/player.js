@@ -13,6 +13,9 @@ game.addEventListener("mousemove", event => {
 })
 
 document.addEventListener("keydown", event => {
+	
+	socket.emit('movement', event.key);
+	
    if (event.key == "w") {
       player.y -= player.speed;
    } 

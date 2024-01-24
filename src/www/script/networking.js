@@ -1,7 +1,11 @@
 const socket = io();
 let com = false;
 
+console.log('');
+console.log('');
 console.log('To send commands to server, type "com=true" into the console.');
+console.log('');
+console.log('');
 
 // Command handling
 async function commandsToServer() {
@@ -21,8 +25,18 @@ async function commandsToServer() {
 	});
 }
 
+
+
+// Data handling
+let hasMapData = false;
 socket.on('dataOnConnection', (arg) => {
-	// Handle data from server (should be the map etc.)
+	if (!hasMapData)
+	{
+		console.log('Recieved map data from server, processing.');
+		// Handle map data
+	} else {
+		console.log('Recieved map data from server, discarding.');
+	}
 });
 
 socket.on('dataFromServer', (arg) => {
@@ -30,8 +44,11 @@ socket.on('dataFromServer', (arg) => {
 	// Handle data from server (positions etc.)
 });
 
+
+
+
 // Updates networking (actually just sends data to server and allows for commands to work)
 function networkingUpdate() {
 	commandsToServer();
-	socket.emit('dataToServer');
+	socket.emit('dataToServer'); // Useless
 }
