@@ -241,6 +241,102 @@ function sphere(center, radius) {
    }
 }
 
+// gets gun prototype from gun prototype
+// used in player
+// (vectors)
+function gun(prototype) {
+   toReturn = {
+      vects : [],
+   };
+
+   for (object of prototype.geometry) {
+      vects = [];
+      for (pos of object.points) {
+         vects.push({ang : Math.atan2(pos[1], pos[0]),
+                     len : Math.sqrt(Math.pow(pos[0], 2) + Math.pow(pos[1], 2))});
+      }
+      toReturn.vects.push(vects);
+   }
+
+   return toReturn;
+}
+
+// gets item object from item prototype
+// (actual geometry)
+function item(prototype, x, y, rotation) {
+   toReturn = {
+      prototype : prototype,
+      geometry : [],
+      up : null,
+      down : null,
+      left : null,
+      right : null,
+      length : null,
+      center : [],
+
+      highlight : function(ctx, offX, offY) {
+         let r = this.up > this.down ? this.up : this.down;
+         r = r > this.length ? r : this.length;
+         r /= 2;
+         r += 15;
+
+         ctx.beginPath();
+         ctx.arc(offX + this.center[0], offY + this.center[1], r, 0, PI2);
+         ctx.fillStyle = highlightColor;
+         ctx.fill()
+      }, 
+
+      draw : function(ctx, offX, offY, shadowLength) {
+         for (object of this.geometry) {
+            object.draw(ctx, offX, offY, shadowLength);
+         }
+      },
+   };
+
+   // get geometry from vectors
+   for (vec of prototype.vects) {
+      points = [];
+      for (dat of vec) {
+         point = [
+            x + Math.cos(dat.ang + rotation) * dat.len,
+            y + Math.sin(dat.ang + rotation) * dat.len];
+
+         // dimensions
+         if (toReturn.up == null || point[1] - y < toReturn.up)
+            toReturn.up = point[1] - y;
+         else if (toReturn.down == null || point[1] - y > toReturn.down)
+            toReturn.down = point[1] - y;
+
+         if (toReturn.right == null || point[0] - x > toReturn.right)
+            toReturn.right = point[0] - x;
+         else if (toReturn.left == null || point[0] - x < toReturn.left)
+            toReturn.left = point[0] - x;
+
+         points.push(point);
+      }
+      toReturn.geometry.push(polygon(points));
+   }
+
+   // get center
+   toReturn.length = toReturn.right - toReturn.left;
+   toReturn.center = [
+      x + Math.cos(rotation) * toReturn.length / 2,
+      y + Math.sin(rotation) * toReturn.length / 2
+   ];
+
+   return toReturn;
+}
+
+
+// gun prototype
+function testGun() {
+   return {
+      geometry : [
+         polygon([[0, -5], [50, -5], [50, 5], [0, 5]]),
+         polygon([[4, 5], [20, 5], [20, 22], [4, 22]]),
+      ],
+   };
+}
 
 let map = [
    polygon([[-300, 100], [200, 100], [200, 200], [-300, 200]]),
@@ -248,4 +344,8 @@ let map = [
    polygon([[400, 200], [600, 180], [600, 300]]),
    sphere([-400, 0], 93),
    sphere([600, 0], 200),
+]
+
+let items = [
+   item(gun(testGun()), 100, 0, 3*Math.PI/4),
 ]
