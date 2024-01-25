@@ -1,11 +1,11 @@
 const socket = io();
 let com = false;
 
-console.log('');
-console.log('');
+console.log(' ');
+console.log(' ');
 console.log('To send commands to server, type "com=true" into the console.');
-console.log('');
-console.log('');
+console.log(' ');
+console.log(' ');
 
 // Command handling
 async function commandsToServer() {
