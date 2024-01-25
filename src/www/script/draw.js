@@ -37,12 +37,6 @@ function draw() {
       object.draw(gameContext, offX, offY, shadowLength);
    }
 
-   // player
-   gameContext.beginPath();
-   gameContext.arc(plX, plY, 30, 0, 2 * Math.PI);
-   gameContext.fillStyle = shadowColor;
-   gameContext.fill(); 
-
    // field of vision
    gameContext.beginPath();
    gameContext.moveTo(plX, plY);
@@ -52,5 +46,13 @@ function draw() {
    gameContext.lineTo(plX, plY);
    gameContext.fillStyle = shadowColor;
    gameContext.fill();
+
+   // player
+   gameContext.beginPath();
+   gameContext.arc(plX, plY, 30, 0, 2 * Math.PI);
+   gameContext.fillStyle = shadowColor;
+   gameContext.fill(); 
+
+   drawGun(player.gun, plX, plY, player.direction, 30, gameContext);
 }
 

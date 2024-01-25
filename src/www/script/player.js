@@ -6,6 +6,7 @@ let player = {
    direction: 0, // radians
    fov: 0.5,
 
+   gun : gun(testGun()),
 }
 
 game.addEventListener("mousemove", event => {
