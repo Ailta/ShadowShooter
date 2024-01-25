@@ -1,3 +1,5 @@
+let PI2 = Math.PI * 2;
+
 function polygon(points) {
    // we will use this later*
    for (point of points) {
@@ -12,11 +14,11 @@ function polygon(points) {
          // js uses range of -PI to PI instead of 0 to 2PI
          // so I do this conversion
          let start = player.direction - player.fov;
-         if (start < 0) start += 2 * Math.PI;
+         if (start < 0) start += PI2;
          let end = player.direction + player.fov;
-         if (end < 0) end += 2 * Math.PI;
+         if (end < 0) end += PI2;
          let dir = player.direction;
-         if (dir < 0) dir += 2 * Math.PI;
+         if (dir < 0) dir += PI2;
 
          // check if players direction goes into any of its sides
          for (let i=0; i< this.points.length; i++) {
@@ -24,9 +26,9 @@ function polygon(points) {
             let p2 = this.points[(i + 1) % this.points.length];
 
             let ang1 = Math.atan2(p1[1] - player.y, p1[0] - player.x);
-            if (ang1 < 0) ang1 += 2 * Math.PI;
+            if (ang1 < 0) ang1 += PI2;
             let ang2 = Math.atan2(p2[1] - player.y, p2[0] - player.x);
-            if (ang2 < 0) ang2 += 2 * Math.PI;
+            if (ang2 < 0) ang2 += PI2;
 
             // *about here
             this.points[i][2] = ang1;
@@ -38,11 +40,14 @@ function polygon(points) {
                continue;
             }
 
+            // point player is looking at
+            // basically intersection of two lines
             // my english is not good enough to understand this
-            const m = Math.tan(dir);
+            const m = Math.tan(dir); // nvim highlits 'tan' as a color lol
             const b = player.y - m * player.x;
             let m2 = (p2[1] - p1[1]) / (p2[0] - p1[0]);
             // don't ask
+            // if it works, it works
             if (m2 == Infinity || m2 == -Infinity) m2 = 1000000000000;
             const b2 = p1[1] - m2 * p1[0];
             const x = (b2 - b) / (m - m2);
@@ -56,7 +61,6 @@ function polygon(points) {
                inWiew = true;
             }
          }
-
 
          if (inWiew) {
             // draw the polygon
@@ -155,8 +159,93 @@ function polygon(points) {
    }
 }
 
+function sphere(center, radius) {
+   return {
+      center: center,
+      radius: radius,
+      draw: function(ctx, offX, offY, shadowLength) {
+         let inWiew = false;
+
+         let start = player.direction - player.fov;
+         if (start < 0) start += PI2;
+         let end = player.direction + player.fov;
+         if (end < 0) end += PI2;
+         let dir = player.direction;
+         if (dir < 0) dir += PI2;
+
+         let angCenter = Math.atan2(this.center[1] - player.y, this.center[0] - player.x);
+         if (angCenter < 0) angCenter += PI2;
+         let distanceCenter = Math.sqrt(Math.pow(player.x - this.center[0], 2) + Math.pow(player.y - this.center[1], 2));
+
+         // https://cs.wikibooks.org/wiki/Geometrie/Numerick%C3%BD_v%C3%BDpo%C4%8Det_pr%C5%AFniku_dvou_kru%C5%BEnic
+         let thalR = distanceCenter/2;
+         let thalX = player.x + Math.cos(angCenter) * thalR;
+         let thalY = player.y + Math.sin(angCenter) * thalR;
+         let d = Math.sqrt(Math.pow(this.center[0] - thalX, 2) + Math.pow(this.center[1] - thalY, 2));
+         let m = (Math.pow(this.radius, 2) - Math.pow(thalR, 2))/(2*d) + d/2;
+         let v = Math.sqrt(Math.pow(this.radius, 2) - Math.pow(m, 2));
+         let sX = this.center[0] + (m/d) * (thalX - this.center[0]);
+         let sY = this.center[1] + (m/d) * (thalY - this.center[1]);
+
+         let point1 = [
+            sX + (v/d)*(this.center[1] - thalY),
+            sY - (v/d)*(this.center[0] - thalX),
+         ];
+         let point2 = [
+            sX - (v/d)*(this.center[1] - thalY),
+            sY + (v/d)*(this.center[0] - thalX),
+         ];
+
+         let angPoint1 = Math.atan2(point1[1] - player.y, point1[0] - player.x)%PI2;
+         if (angPoint1 < 0) angPoint1 += PI2;
+         let angPoint2 = Math.atan2(point2[1] - player.y, point2[0] - player.x)%PI2;
+         if (angPoint2 < 0) angPoint2 += PI2;
+
+         block: {
+            // if side of circle seen
+            if ((end > start ? angPoint1 >= start && angPoint1 <= end : angPoint1 >= start || angPoint1 <= end)
+             || (end > start ? angPoint2 >= start && angPoint2 <= end : angPoint2 >= start || angPoint2 <= end)) {
+               inWiew = true;
+               break block;
+            }
+
+            // if is player looking between the two points
+            if (angPoint2 > angPoint1 ?
+                 (angPoint2 >= dir && dir >= angPoint1)
+                :(angPoint2 >= dir || dir >= angPoint1))
+                   inWiew = true;
+            
+         }
+
+         if (inWiew) {
+            // circle
+            ctx.beginPath();
+            ctx.arc(offX + this.center[0], offY +  this.center[1], this.radius, 0, PI2);
+            ctx.fillStyle = shadowColor;
+            ctx.fill();
+
+            // shadow
+            ctx.beginPath();
+            ctx.moveTo(offX + point1[0],
+                       offY + point1[1]);
+            ctx.lineTo(offX + point1[0] + Math.cos(angPoint1) * shadowLength,
+                       offY + point1[1] + Math.sin(angPoint1) * shadowLength);
+            ctx.lineTo(offX + point2[0] + Math.cos(angPoint2) * shadowLength,
+                       offY + point2[1] + Math.sin(angPoint2) * shadowLength);
+            ctx.lineTo(offX + point2[0],
+                       offY + point2[1]);
+            ctx.fillStyle = shadowColor;
+            ctx.fill();
+         }
+      }
+   }
+}
+
+
 let map = [
    polygon([[-300, 100], [200, 100], [200, 200], [-300, 200]]),
    polygon([[-300, -200], [200, -200], [200, -100], [-300, -100]]),
    polygon([[400, 200], [600, 180], [600, 300]]),
+   sphere([-400, 0], 93),
+   sphere([600, 0], 200),
 ]
