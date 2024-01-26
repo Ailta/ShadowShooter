@@ -27,11 +27,6 @@ document.addEventListener("keydown", event => {
 });
 
 function updateKeys() {
-	if (keys.up.pressed) {player.y -= player.speed;}
-	if (keys.down.pressed) {player.y += player.speed;}
-	if (keys.left.pressed) {player.x -= player.speed;}
-	if (keys.right.pressed) {player.x += player.speed;}
-	
 	socket.emit('movement', keys);
 }
 

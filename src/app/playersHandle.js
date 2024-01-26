@@ -1,5 +1,9 @@
 module.exports = {onCall, onClientConnection, onClientDisconnect};
 
+let players = {
+	
+}
+
 function onCall (keys, socket) {
 	// This function gets called every time a key is pressed by some client
 	// 'keys' is the key that is pressed and socket is the connection
@@ -9,6 +13,12 @@ function onCall (keys, socket) {
 	// This is where we will be handling movement
 	
 	//console.log(keys);
+	
+	if (keys.up.pressed) {player.y -= player.speed;}
+	if (keys.down.pressed) {player.y += player.speed;}
+	if (keys.left.pressed) {player.x -= player.speed;}
+	if (keys.right.pressed) {player.x += player.speed;}
+	
 }
 
 function onClientConnection (socket) {
