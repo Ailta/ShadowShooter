@@ -1,12 +1,14 @@
 module.exports = {onCall, onClientConnection, onClientDisconnect};
 
-function onCall (key, socket) {
+function onCall (keys, socket) {
 	// This function gets called every time a key is pressed by some client
-	// 'key' is the key that is pressed and socket is the connection
+	// 'keys' is the key that is pressed and socket is the connection
 	// We can use socket to get what client pressed what key
 	// example:
-	//console.log(`${key} from player: ${socket.id}`);
+	//console.log(`${keys} from player: ${socket.id}`);
 	// This is where we will be handling movement
+	
+	//console.log(keys);
 }
 
 function onClientConnection (socket) {

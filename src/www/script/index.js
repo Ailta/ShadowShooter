@@ -7,6 +7,7 @@ function init() {
 
 async function loop() {
    while (true) {
+	    updateKeys();
 		networkingUpdate();
 		draw();
 		// wait a bit
