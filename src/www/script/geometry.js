@@ -241,6 +241,141 @@ function sphere(center, radius) {
    }
 }
 
+function drawGun(gun, x, y, rotation, radius, gameContext) {
+   const X = Math.cos(rotation) * radius + x
+           + Math.cos(gun.offset.ang + rotation) * gun.offset.len;
+   const Y = Math.sin(rotation) * radius + y
+           + Math.sin(gun.offset.ang + rotation) * gun.offset.len;
+
+   for (object of gun.vects) {
+      const points = [];
+      for (vect of object) {
+         points.push([
+            X + Math.cos(vect.ang + rotation) * vect.len,
+            Y + Math.sin(vect.ang + rotation) * vect.len
+         ]);
+      }
+
+      gameContext.beginPath();
+      for (p of points) {
+         gameContext.lineTo(p[0], p[1]);
+      }
+      gameContext.fillStyle = shadowColor;
+      gameContext.fill();
+
+      gameContext.beginPath();
+      for (p of points) {
+         gameContext.lineTo(p[0], p[1]);
+      }
+      gameContext.strokeStyle = shadowColor;
+      gameContext.lineWidth = 2;
+      gameContext.stroke();
+   }
+}
+
+// gets gun prototype from gun prototype
+// used in player
+// (vectors)
+function gun(prototype) {
+   const toReturn = {
+      offset : {ang : Math.atan2(prototype.offsetY, prototype.offsetX),
+                len : Math.sqrt(Math.pow(prototype.offsetX, 2)
+                    + Math.pow(prototype.offsetY, 2))},
+      vects : [],
+      up: null,
+      down: null,
+      left: null,
+      right: null,
+      length: null,
+   };
+
+   for (object of prototype.geometry) {
+      const vects = [];
+      for (pos of object.points) {
+         // get vector
+         vects.push({ang : Math.atan2(pos[1], pos[0]),
+                     len : Math.sqrt(Math.pow(pos[0], 2) + Math.pow(pos[1], 2))});
+
+         // dimensions
+         if (toReturn.up == null || pos[1] < toReturn.up)
+            toReturn.up = pos[1];
+         else if (toReturn.down == null || pos[1] > toReturn.down)
+            toReturn.down = pos[1];
+
+         if (toReturn.right == null || pos[0] > toReturn.right)
+            toReturn.right = pos[0];
+         else if (toReturn.left == null || pos[0] < toReturn.left)
+            toReturn.left = pos[0];
+      }
+      toReturn.vects.push(vects);
+   }
+
+   toReturn.length = toReturn.right - toReturn.left;
+
+   return toReturn;
+}
+
+// gets item object from item prototype
+// (actual geometry)
+function item(prototype, x, y, rotation) {
+   const toReturn = {
+      prototype : prototype,
+      geometry : [],
+      center : [],
+
+      highlight : function(ctx, offX, offY) {
+         let r = this.prototype.up > this.prototype.down ?
+            this.prototype.up : this.prototype.down;
+         r = r > this.prototype.length ? r : this.prototype.length;
+         r /= 2;
+         r += 15;
+
+         ctx.beginPath();
+         ctx.arc(offX + this.center[0], offY + this.center[1], r, 0, PI2);
+         ctx.fillStyle = highlightColor;
+         ctx.fill()
+      }, 
+
+      draw : function(ctx, offX, offY, shadowLength) {
+         for (object of this.geometry) {
+            object.draw(ctx, offX, offY, shadowLength);
+         }
+      },
+   };
+
+   // get geometry from vectors
+   for (vec of prototype.vects) {
+      const points = [];
+      for (dat of vec) {
+         points.push([
+            x + Math.cos(dat.ang - rotation) * dat.len,
+            y + Math.sin(dat.ang - rotation) * dat.len]);
+      }
+      toReturn.geometry.push(polygon(points));
+   }
+
+   // get center
+   toReturn.center = [
+      x + Math.cos(-rotation) * prototype.length / 2,
+      y + Math.sin(-rotation) * prototype.length / 2
+   ];
+
+   return toReturn;
+}
+
+
+// gun prototype
+function testGun() {
+   return {
+      offsetX : -8,
+      offsetY : -20,
+
+      geometry : [
+         polygon([[0, -5], [50, -5], [50, 5], [0, 5]]),
+         polygon([[4, 5], [20, 5], [20, 22], [4, 22]]),
+      ],
+   };
+}
 
 let map = [
    polygon([[-300, 100], [200, 100], [200, 200], [-300, 200]]),
@@ -248,4 +383,8 @@ let map = [
    polygon([[400, 200], [600, 180], [600, 300]]),
    sphere([-400, 0], 93),
    sphere([600, 0], 200),
+]
+
+let items = [
+   item(gun(testGun()), 100, 0, Math.PI/4),
 ]
