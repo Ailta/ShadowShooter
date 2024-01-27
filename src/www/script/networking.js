@@ -1,7 +1,7 @@
 const socket = io();
 let com = false;
 
-let name = '';
+let players = {};
 
 console.log(' ');
 console.log(' ');
@@ -12,7 +12,7 @@ console.log(' ');
 // Command handling
 async function commandsToServer() {
 	if (com) {
-		console.log('commands (x = number; y = text): dataSendTick=x\nclientName=y');
+		console.log('commands (x = number; y = text): dataSendTick=x\n');
 		const input = prompt('command:');
 		
 		console.log(input);
@@ -43,11 +43,16 @@ socket.on('dataOnConnection', (arg) => {
 
 socket.on('dataFromServer', (arg) => {
 	for (let i = 0; i < arg.next_id; i++) {
-		console.log(socket.id);
 		if (arg[i].socket_id == socket.id) {
 			player.x = arg[i].position_x;
 			player.y = arg[i].position_y;
 			player.direction = arg[i].direction;
+		} else {
+			players[i] = {
+				position_x: arg[i].position_x,
+				position_y: arg[i].position_y,
+				direction: arg[i].direction
+			}
 		}
 	}
 });
