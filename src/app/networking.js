@@ -34,10 +34,10 @@ function onConnection(socket) {
 
 // Smol loop that spams clients
 // dataSendTick can be set from clients
-let dataSendTick = 30;
+let dataSendTick = 120;
 async function loop(socket) {
    while (true) {
-	  socket.emit('dataFromServer', 'hi, Im data.'); // Add a proper fuction that will return positions of players etc.
+	  socket.emit('dataFromServer', playersHandle.getPlayers()); // Returns positions of players etc.
 	  
 	  await new Promise(resolve => setTimeout(resolve, 1000 / dataSendTick));
    }
