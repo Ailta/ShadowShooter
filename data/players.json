@@ -1,0 +1,16 @@
+{
+    "0": {
+		"id": "socket.id",
+        "position-x": 0,
+		"position-y": 0,
+		"direction": 0,
+		"name": "hi",
+    },
+    "1": {
+		"id": "socket.id",
+        "position-x": 0,
+		"position-y": 0,
+		"direction": 0,
+		"name": "hi2",
+    }
+}
