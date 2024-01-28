@@ -82,8 +82,6 @@ function polygon(points) {
             ctx.stroke();
 
             // shadow
-            // this is a bit hacky but it works
-
             // this for loop fixes overflow of radians
             for (let i=0; i< this.points.length; i++) {
                if (this.points[i][2] > 3*Math.PI/2) {
@@ -100,69 +98,36 @@ function polygon(points) {
                return a[2] - b[2];
             });
 
-            const s00 = sorted[0][0];
-            const s01 = sorted[0][1];
-            const s02 = sorted[0][2];
+            // get points
+            const firstX = sorted[0][0];
+            const firstY = sorted[0][1];
+            const firstAngle = sorted[0][2];
 
-            const sm10 = sorted[sorted.length - 1][0];
-            const sm11 = sorted[sorted.length - 1][1];
-            const sm12 = sorted[sorted.length - 1][2];
+            const lastX = sorted[sorted.length - 1][0];
+            const lastY = sorted[sorted.length - 1][1];
+            const lastAngle = sorted[sorted.length - 1][2];
 
+            // draw the shadow
             ctx.beginPath();
-            ctx.moveTo(offX + s00, offY + s01);
-            ctx.lineTo(offX + s00 + Math.cos(s02) * shadowLength,
-                       offY + s01 + Math.sin(s02) * shadowLength);
-            ctx.lineTo(offX + sm10 + Math.cos(sm12) * shadowLength,
-                       offY + sm11 + Math.sin(sm12) * shadowLength);
-            ctx.lineTo(offX + sm10, offY + sm11);
-            ctx.lineTo(offX + s00, offY + s01);
+            ctx.moveTo(offX + firstX, offY + firstY);
+            ctx.lineTo(offX + firstX + Math.cos(firstAngle) * shadowLength,
+                       offY + firstY + Math.sin(firstAngle) * shadowLength);
+            ctx.lineTo(offX + lastX + Math.cos(lastAngle) * shadowLength,
+                       offY + lastY + Math.sin(lastAngle) * shadowLength);
+            ctx.lineTo(offX + lastX, offY + lastY);
+            ctx.lineTo(offX + firstX, offY + firstY);
             ctx.fillStyle = shadowColor;
             ctx.fill();
 
+            // draw border
             ctx.beginPath();
-            ctx.moveTo(offX + s00, offY + s01);
-            ctx.lineTo(offX + s00 + Math.cos(s02) * shadowLength,
-                       offY + s01 + Math.sin(s02) * shadowLength);
-            ctx.lineTo(offX + sm10 + Math.cos(sm12) * shadowLength,
-                       offY + sm11 + Math.sin(sm12) * shadowLength);
-            ctx.lineTo(offX + sm10, offY + sm11);
-            ctx.lineTo(offX + s00, offY + s01);
-            ctx.strokeStyle = shadowColor;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            const s10 = sorted[1][0];
-            const s11 = sorted[1][1];
-            const s12 = sorted[1][2];
-
-            let sm20 = sorted[sorted.length - 2][0];
-            let sm21 = sorted[sorted.length - 2][1];
-            let sm22 = sorted[sorted.length - 2][2];
-            if (sorted.length == 3) {
-               sm20 = s00;
-               sm21 = s01;
-               sm22 = s02;
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(offX + s10, offY + s11);
-            ctx.lineTo(offX + s10 + Math.cos(s12) * shadowLength,
-                       offY + s11 + Math.sin(s12) * shadowLength);
-            ctx.lineTo(offX + sm20 + Math.cos(sm22) * shadowLength,
-                       offY + sm21 + Math.sin(sm22) * shadowLength);
-            ctx.lineTo(offX + sm20, offY + sm21);
-            ctx.lineTo(offX + s10, offY + s11);
-            ctx.fillStyle = shadowColor;
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(offX + s10, offY + s11);
-            ctx.lineTo(offX + s10 + Math.cos(s12) * shadowLength,
-                       offY + s11 + Math.sin(s12) * shadowLength);
-            ctx.lineTo(offX + sm20 + Math.cos(sm22) * shadowLength,
-                       offY + sm21 + Math.sin(sm22) * shadowLength);
-            ctx.lineTo(offX + sm20, offY + sm21);
-            ctx.lineTo(offX + s10, offY + s11);
+            ctx.moveTo(offX + firstX, offY + firstY);
+            ctx.lineTo(offX + firstX + Math.cos(firstAngle) * shadowLength,
+                       offY + firstY + Math.sin(firstAngle) * shadowLength);
+            ctx.lineTo(offX + lastX + Math.cos(lastAngle) * shadowLength,
+                       offY + lastY + Math.sin(lastAngle) * shadowLength);
+            ctx.lineTo(offX + lastX, offY + lastY);
+            ctx.lineTo(offX + firstX, offY + firstY);
             ctx.strokeStyle = shadowColor;
             ctx.lineWidth = 1;
             ctx.stroke();
