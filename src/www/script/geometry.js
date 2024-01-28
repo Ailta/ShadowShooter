@@ -83,7 +83,19 @@ function polygon(points) {
 
             // shadow
             // this is a bit hacky but it works
-            // might fix later
+
+            // this for loop fixes overflow of radians
+            for (let i=0; i< this.points.length; i++) {
+               if (this.points[i][2] > 3*Math.PI/2) {
+                  for (let j=0; j< this.points.length; j++) {
+                     if (this.points[j][2] < Math.PI/2)
+                        this.points[j][2] += PI2;
+                  }
+                  break;
+               }
+            }
+
+            // sorts from smallest angle to largest
             sorted = this.points.slice().sort((a, b) => {
                return a[2] - b[2];
             });
