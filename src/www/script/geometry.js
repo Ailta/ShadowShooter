@@ -307,9 +307,16 @@ function item(prototype, x, y, rotation) {
          r /= 2;
          r += 15;
 
+         const x = offX + this.center[0];
+         const y = offY + this.center[1];
+
+         const gradient = ctx.createRadialGradient(x, y, 1, x, y, r);
+         gradient.addColorStop(0.6, highlightColor);
+         gradient.addColorStop(1, flashlightColor);
+
          ctx.beginPath();
-         ctx.arc(offX + this.center[0], offY + this.center[1], r, 0, PI2);
-         ctx.fillStyle = highlightColor;
+         ctx.arc(x, y, r, 0, PI2);
+         ctx.fillStyle = gradient;
          ctx.fill()
       }, 
 
