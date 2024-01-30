@@ -18,7 +18,7 @@ let controls = {
 	down: {pressed:false},
 	right: {pressed:false},
 	left: {pressed:false},
-	direction: {radians:0}
+	direction: 0
 }
 
 document.addEventListener("keydown", event => {
