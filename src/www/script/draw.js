@@ -3,7 +3,7 @@ const gameContext = game.getContext("2d");
 
 let shadowColor = "black";
 let flashlightColor = "lightgray";
-let highlightColor = " white"
+let highlightColor = "white";
 
 function clear() {
 	gameContext.clearRect(0, 0, game.width, game.height);
@@ -36,6 +36,20 @@ function draw() {
    for (object of map) {
       object.draw(gameContext, offX, offY, shadowLength);
    }
+
+   const gradient = gameContext.createRadialGradient(plX, plY, player.visionLengthInner, plX, plY, player.visionLengthOuter);
+   gradient.addColorStop(0, "#00000000");
+   gradient.addColorStop(1, shadowColor);
+
+   // vision length
+   gameContext.beginPath();
+   gameContext.moveTo(plX, plY);
+   gameContext.arc(plX, plY, darknessRadius,
+                   player.direction - player.fov - 0.1,
+                   player.direction + player.fov + 0.1);
+   gameContext.lineTo(plX, plY);
+   gameContext.fillStyle = gradient;
+   gameContext.fill();
 
    // field of vision
    gameContext.beginPath();

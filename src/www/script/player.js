@@ -4,6 +4,8 @@ let player = {
 
    direction: 0, // radians
    fov: 0.5,
+   visionLengthInner: 50,
+   visionLengthOuter: 750,
 
    gun : gun(testGun()),
 }
@@ -18,7 +20,7 @@ let controls = {
 	down: {pressed:false},
 	right: {pressed:false},
 	left: {pressed:false},
-	direction: 0
+	direction: 0,
 }
 
 document.addEventListener("keydown", event => {
