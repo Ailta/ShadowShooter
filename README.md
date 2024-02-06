@@ -19,3 +19,5 @@ exports.secret = process.env.SECRET;
 
 # and then open 'src' folder in cmd and type "npm install", it will install all the necessary packages
 # to start the server type "npm run dev" in cmd that is in opened in 'src' folder
+
+# or to install and run the project, you can just run START.BAT
